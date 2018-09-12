@@ -13,6 +13,14 @@
         <div class="col-md-7 offset-2">
             <h1>Sales Stickers</h1>
             <form method="post" action="./print.php">
+
+                <div class="form-group row">
+                    <label for="trackingNo" class="col-sm-3 col-form-label">Tracking No.</label>
+                    <div class="col-sm-9">
+                        <input type="number" maxlength="5" name="trackingNo" id="trackingNo" />
+                    </div>
+                </div>
+
                 <div class="form-group row">
                     <label for="category" class="col-sm-3 col-form-label">Category</label>
                     <div class="col-sm-9">
@@ -40,7 +48,7 @@
                     <div class="col-sm-9">
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" name="washer[]" id="stacked"
-                                   value="Stacked" checked>
+                                   value="Stacked" >
                             <label class="form-check-label" for="stacked">
                                 Stacked
                             </label>
@@ -220,7 +228,7 @@
                     <label for="category" class="col-sm-3 col-form-label">Condition</label>
                     <div class="col-sm-9">
                         <select class="form-control condition" id="condition1" name="condition1" data-type="1">
-                            <option>Refurbished</option>
+                            <option>Neu Refurbished</option>
                             <option>Manufacturer Refurbished</option>
                             <option>New Scratch / Dent</option>
                         </select>
@@ -268,7 +276,7 @@
                     <label for="category" class="col-sm-3 col-form-label">Condition</label>
                     <div class="col-sm-9">
                         <select class="form-control condition" id="condition2" name="condition2" data-type="2">
-                            <option>Refurbished</option>
+                            <option>Neu Refurbished</option>
                             <option>Manufacturer Refurbished</option>
                             <option>New Scratch / Dent</option>
                         </select>
@@ -343,7 +351,7 @@
                 </div>
                 <div class="form-group row">
                     <div class="col-sm-9 offset-3">
-                        <button type="submit" class="btn btn-primary">Print</button>
+                        <button type="submit" class="btn btn-primary btn-lg">Print</button>
                     </div>
                 </div>
             </form>
@@ -386,7 +394,7 @@ $(function() {
     }).trigger('change');
 
     var conditionWarranties = {
-        'Refurbished' : ['Neu 30-Day Parts and Labor Warranty Included'],
+        'Neu Refurbished' : ['Neu 30-Day Parts and Labor Warranty Included'],
         'Manufacturer Refurbished':['1 Year Manufacturer Warranty', 'Manufacturer Warranty until __/__/____'],
         'New Scratch / Dent':['1 Year Manufacturer Warranty ']
     };
@@ -402,7 +410,7 @@ $(function() {
             $(cwEl).append('<option>'+conditionWarranties[selected][i]+'</option>');
         }
 
-        if(selected == 'Refurbished' || selected == 'New Scratch / Dent') {
+        if(selected == 'Neu Refurbished' || selected == 'New Scratch / Dent') {
             $('#conditionWarranties'+type).hide();
             $('#conditionWarrantiesTxt'+type).show().val(conditionWarranties[selected][0]);
             $('#conditionDate1, #conditionDate2').hide();
@@ -419,7 +427,7 @@ $(function() {
         var save = compareTo - price;
         var percent = Math.round(save/compareTo * 100, 0);
         $('#save').text('$'+save);
-        $('#savePercent').text(percent+'%');
+        $('#savePercent').text(percent+'% off');
         $('input[name="save"]').val(save);
         $('input[name="savePercent"]').val(percent);
     });

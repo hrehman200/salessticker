@@ -61,32 +61,33 @@ function setVariables($category) {
         if ($_POST['condition1'] == $_POST['condition2']) {
             $h2 = $_POST['condition1'];
         } else {
-            $h2 = sprintf('%s Washer, %s Dryer', $_POST['condition1'], $_POST['condition2']);
+            $h2 = sprintf('<span style="text-align: left;">%s Washer<br/>%s Dryer</span>', $_POST['condition1'], $_POST['condition2']);
         }
 
         if ($_POST['condition1'] == $_POST['condition2']) {
-            $warranty = sprintf('Washer and Dryer - (%s', getConditionWarranty($_POST['conditionWarranties1'], $_POST['conditionDate1']));
-            if($_POST['condition1'] == 'Refurbished') {
+            $warranty = sprintf('%s', getConditionWarranty($_POST['conditionWarranties1'], $_POST['conditionDate1']));
+            if($_POST['condition1'] == 'Neu Refurbished') {
                 $warranty .= sprintf('<br><b>+ 1 Year Extended Warranty Available for $%d</b>', getExtendedWarrantyPrice($_POST['price']));
             }
-            $warranty .= ')';
         } else {
-            if($_POST['condition1'] == 'Refurbished' || $_POST['condition2'] == 'Refurbished') {
+            if($_POST['condition1'] == 'Neu Refurbished') {
                 $ext_text1 = sprintf('<br><b>+ 1 Year Extended Warranty Available for $%d</b>', getExtendedWarrantyPrice($_POST['price']/2));
             }
-            $warranty = sprintf('Washer - (%s)<br>
-                Dryer - (%s) %s', getConditionWarranty($_POST['conditionWarranties1'], $_POST['conditionDate1']), getConditionWarranty($_POST['conditionWarranties2'], $_POST['conditionDate2']), $ext_text1);
+            if($_POST['condition2'] == 'Neu Refurbished') {
+                $ext_text2 = sprintf('<br><b>+ 1 Year Extended Warranty Available for $%d</b>', getExtendedWarrantyPrice($_POST['price']/2));
+            }
+            $warranty = sprintf('Washer - %s %s<br>
+                Dryer - %s %s', getConditionWarranty($_POST['conditionWarranties1'], $_POST['conditionDate1']), $ext_text1, getConditionWarranty($_POST['conditionWarranties2'], $_POST['conditionDate2']), $ext_text2);
         }
 
     } else {
         $condition_index = ($category == 'Dryer') ? 2 : 1;
         $h2 = $_POST['condition' . $condition_index];
-        $warranty = sprintf('%s - (%s', $category, getConditionWarranty($_POST['conditionWarranties'.$condition_index], $_POST['conditionDate'.$condition_index]));
+        $warranty = sprintf('%s', getConditionWarranty($_POST['conditionWarranties'.$condition_index], $_POST['conditionDate'.$condition_index]));
 
-        if ($_POST['condition' . $condition_index] == 'Refurbished') {
+        if ($_POST['condition' . $condition_index] == 'Neu Refurbished') {
             $warranty .= sprintf('<br><b>+ 1 Year Extended Warranty Available for $%d</b>', getExtendedWarrantyPrice($_POST['price']));
         }
-        $warranty .= ')';
     }
 }
 
@@ -103,7 +104,8 @@ function getVariable($name) {
 
 switch ($_POST['category']) {
     case 'Washer Dryer Set':
-        $h1 = sprintf('%s Washer and %s%s Dryer Set', getVariable('washer'), $_POST['dryer'], ' ' . $_POST['dryerSteam']);
+        $h1 = sprintf('%s Washer and %s%s Dryer %s', getVariable('washer'), $_POST['dryer'], ' ' . $_POST['dryerSteam'],
+            !isStackedCheckedInWasherDryerSet() ? 'Set' : '');
         break;
 
     case 'Refrigerator':
@@ -152,40 +154,46 @@ setVariables($_POST['category']);
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <title>Print Sales Sticker</title>
-    <style type="text/css" media="print">
+    <style type="text/css" media="all">
         @page {
             size: 4.1in 5.8in;
-            margin: 0;
+            margin: 4mm;
         }
 
-        html, body, .table {
+        html, body{
             padding: 0;
-            margin: 0;
+            margin: 2mm;
             width: 109mm;
             height: 152mm;
-            font-size: 3vw;
+        }
+
+        .table {
+            width: 5.5in;
+            height: 5.8in;
         }
 
         .table td {
             padding-top: 0;
             padding-bottom: 0;
             border-top: none;
+            font-size: 4.7vw;
         }
 
         .price {
-            /*font-size: 2vw;*/
+            font-size: 16vw;
             font-weight: bold;
             text-align: center;
         }
 
         #footer {
             position: absolute;
-            bottom: 0;
-            font-size: 9px;
+            bottom: 2mm;
+            font-size: 1em;
             line-height: 1em;
-            text-align: center;
-            width: 76.2mm;
+            text-align: right;
+            width: 5.4in;
         }
+
     </style>
 </head>
 <body>
@@ -195,10 +203,13 @@ setVariables($_POST['category']);
     <tr>
         <td colspan="3">
             <h1 class="text-center"><?= $h1 ?></h1>
-            <h2 class="text-center"><?= $h2 ?></h2>
+            <h2 class="<?=(strpos($h2, '<span') !== false) ? '' : 'text-center'?>"><?= $h2 ?></h2>
             <hr/>
             <h1 class="text-center price">$<?= $_POST['price'] ?></h1>
         </td>
+    </tr>
+    <tr>
+        <td colspan="3">&nbsp;</td>
     </tr>
     <tr>
         <td><b>Compare</b></td>
@@ -206,11 +217,17 @@ setVariables($_POST['category']);
     </tr>
     <tr>
         <td><b>Save</b></td>
-        <td colspan="2">$<?= $_POST['save'] ?> (<?= $_POST['savePercent'] ?>%)</td>
+        <td colspan="2">$<?= $_POST['save'] ?> (<?= $_POST['savePercent'] ?>% off)</td>
+    </tr>
+    <tr>
+        <td colspan="3">&nbsp;</td>
     </tr>
     <tr>
         <td><b>Warranty</b></td>
         <td colspan="2"><?=$warranty?></td>
+    </tr>
+    <tr>
+        <td colspan="3">&nbsp;</td>
     </tr>
     <tr>
         <td colspan="3">
@@ -221,12 +238,14 @@ setVariables($_POST['category']);
         </td>
     </tr>
     <tr>
-        <td></td>
+        <td colspan="3">&nbsp;</td>
+    </tr>
+    <tr>
         <?php
         if(strlen($_POST['width2']) > 0 && !isStackedCheckedInWasherDryerSet()) {
-        ?>
+            ?>
             <td>
-                <div align="right">
+                <div align="left">
                     <b><u>Washer</u></b><br>
                     <b>H: </b><?= $_POST['height1'] ?>"<br>
                     <b>W: </b><?= $_POST['width1'] ?>"<br>
@@ -234,29 +253,35 @@ setVariables($_POST['category']);
                 </div>
             </td>
             <td>
-                <div align="right">
+                <div align="left">
                     <b><u>Dryer</u></b><br>
                     <b>H: </b><?= $_POST['height2'] ?>"<br>
                     <b>W: </b><?= $_POST['width2'] ?>"<br>
                     <b>D: </b><?= $_POST['depth2'] ?>"
                 </div>
             </td>
-        <?php
+            <?php
         } else {
-        ?>
-            <td></td>
+            ?>
             <td>
-                <div align="right">
+                <div align="left">
                     <b>H: </b><?= $_POST['height1'] ?>"<br>
                     <b>W: </b><?= $_POST['width1'] ?>"<br>
                     <b>D: </b><?= $_POST['depth1'] ?>"
                 </div>
             </td>
-        <?php
+            <td></td>
+            <?php
         }
         ?>
+        <td></td>
     </tr>
 </table>
+
+    <div id="footer">
+        Ref # : <?=$_POST['trackingNo']?>
+    </div>
+
 </div>
 
 <script src="js/jquery-1.12.4.min.js"></script>
@@ -264,7 +289,17 @@ setVariables($_POST['category']);
 <script src="js/bootstrap.min.js"></script>
 <script type="text/javascript">
     $(function () {
+
+        <?php
+        if($_POST['category'] != 'Washer Dryer Set') {
+        ?>
+            $('.table td').css('font-size', '5.5vw');
+        <?php
+        }
+        ?>
+
         window.print();
+        window.location.href = './index.php';
     });
 </script>
 </body>
