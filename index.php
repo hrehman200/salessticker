@@ -8,9 +8,9 @@
 </head>
 <body>
 
-<div class="container">
+<div class="container offset-1">
     <div class="row">
-        <div class="col-md-6 offset-3">
+        <div class="col-md-7 offset-2">
             <h1>Sales Stickers</h1>
             <form method="post" action="./print.php">
                 <div class="form-group row">
@@ -22,16 +22,19 @@
                             <option>Stove</option>
                             <option>Washing Machine</option>
                             <option>Washer</option>
-                            <option>   Dryer</option>
-                            <option>   Microwave</option>
-                            <option>   Dishwasher</option>
-                            <option>   Freezer</option>
-                            <option>   Cooktop</option>
-                            <option>   Wall Oven</option>
+                            <option>Dryer</option>
+                            <option>Microwave</option>
+                            <option>Dishwasher</option>
+                            <option>Freezer</option>
+                            <option>Cooktop</option>
+                            <option>Wall Oven</option>
                             <option>Misc.</option>
                         </select>
                     </div>
                 </div>
+
+                <fieldset class="fieldset-border">
+                    <legend class="fieldset-border"> Washer</legend>
                 <div class="form-group row washer_dryer_set washer">
                     <label for="product" class="col-sm-3 col-form-label">Washer</label>
                     <div class="col-sm-9">
@@ -209,7 +212,7 @@
                     <label for="product" class="col-sm-3 col-form-label">Misc.</label>
                     <div class="col-sm-9">
                         <div class="">
-                            <input class="form-control col-md-3" type="text" name="misc" id="misc" placeholder="Title">
+                            <input class="form-control col-md-12" type="text" name="misc" id="misc" placeholder="Title">
                         </div>
                     </div>
                 </div>
@@ -227,11 +230,15 @@
                     <label for="category" class="col-sm-3 col-form-label">Condition Warranties</label>
                     <div class="col-sm-9">
                         <select class="form-control conditionWarranties1" id="conditionWarranties1" name="conditionWarranties1" data-type="1">
-
                         </select>
+                        <input type="text" class="form-control border-0" readonly name="conditionWarrantiesTxt1" id="conditionWarrantiesTxt1" />
                         <input type="date" name="conditionDate1" id="conditionDate1" />
                     </div>
                 </div>
+                </fieldset>
+
+                <fieldset class="fieldset-border">
+                    <legend class="fieldset-border"> Dryer</legend>
                 <div class="form-group row washer_dryer_set dryer">
                     <label for="product" class="col-sm-3 col-form-label">Dryer</label>
                     <div class="col-sm-9">
@@ -271,11 +278,13 @@
                     <label for="category" class="col-sm-3 col-form-label">Condition Warranties</label>
                     <div class="col-sm-9">
                         <select class="form-control conditionWarranties2" id="conditionWarranties2" name="conditionWarranties2" data-type="2">
-
                         </select>
+                        <input type="text" class="form-control border-0" readonly name="conditionWarrantiesTxt2" id="conditionWarrantiesTxt2" />
                         <input type="date" name="conditionDate2" id="conditionDate2" />
                     </div>
                 </div>
+                </fieldset>
+
                 <div class="form-group row">
                     <label for="price" class="col-sm-3 col-form-label">Price</label>
                     <div class="col-sm-3">
@@ -307,29 +316,29 @@
                         <input type="text" class="form-control" name="feature3"  id="feature3">
                     </div>
                 </div>
-                <div class="form-group row">
+                <div class="form-group row measurement">
                     <label for="save" class="col-sm-3 col-form-label">Measurements</label>
-                    <div class="col-sm-3">
+                    <div class="col-sm-4">
                         <span class="washer_dryer_set">Washer</span><br>
                         <label>H:</label>
-                        <input type="text" name="height1" class="form-control number" id="height1" style="display: inline; width:70%;">
+                        <input type="text" name="height1" class="form-control number" id="height1" >
                         <br/>
                         <label>W:</label>
-                        <input type="text" name="width1" class="form-control number" id="width1" style="display: inline; width:70%;">
+                        <input type="text" name="width1" class="form-control number" id="width1" >
                         <br/>
                         <label>D:</label>
-                        <input type="text" name="depth1" class="form-control number" id="depth1" style="display: inline; width:70%;">
+                        <input type="text" name="depth1" class="form-control number" id="depth1" >
                     </div>
-                    <div class="col-sm-3 washer_dryer_set">
+                    <div class="col-sm-4 washer_dryer_set">
                         <span>Dryer</span><br>
                         <label>H:</label>
-                        <input type="text" name="height2" class="form-control number" id="height2" style="display: inline; width:70%;">
+                        <input type="text" name="height2" class="form-control number" id="height2" >
                         <br/>
                         <label>W:</label>
-                        <input type="text" name="width2" class="form-control number" id="width2" style="display: inline; width:70%;">
+                        <input type="text" name="width2" class="form-control number" id="width2" >
                         <br/>
                         <label>D:</label>
-                        <input type="text" name="depth2" class="form-control number" id="depth2" style="display: inline; width:70%;">
+                        <input type="text" name="depth2" class="form-control number" id="depth2" >
                     </div>
                 </div>
                 <div class="form-group row">
@@ -363,10 +372,21 @@ $(function() {
         if(thisName == 'dryer') {
             $('.condition1').hide();
         }
+
+        // display legend only for washer dryer set
+        if($(this).val() == 'Washer Dryer Set') {
+            $('.fieldset-border').show();
+            $('fieldset').addClass('fieldset-border');
+        } else {
+            $('fieldset').removeClass('fieldset-border');
+            $('.fieldset-border').hide();
+        }
+
+        $('input[name="washer[]"]').change();
     }).trigger('change');
 
     var conditionWarranties = {
-        'Refurbished' : ['30-Day New Parts and Labor Warranty Included'],
+        'Refurbished' : ['Neu 30-Day Parts and Labor Warranty Included'],
         'Manufacturer Refurbished':['1 Year Manufacturer Warranty', 'Manufacturer Warranty until __/__/____'],
         'New Scratch / Dent':['1 Year Manufacturer Warranty ']
     };
@@ -381,11 +401,21 @@ $(function() {
         for(var i in conditionWarranties[selected]) {
             $(cwEl).append('<option>'+conditionWarranties[selected][i]+'</option>');
         }
+
+        if(selected == 'Refurbished' || selected == 'New Scratch / Dent') {
+            $('#conditionWarranties'+type).hide();
+            $('#conditionWarrantiesTxt'+type).show().val(conditionWarranties[selected][0]);
+            $('#conditionDate1, #conditionDate2').hide();
+        } else {
+            $('#conditionWarranties'+type).show();
+            $('#conditionWarrantiesTxt'+type).hide();
+        }
+
     }).trigger('change');
 
-    $('#compareTo').on('change', function(e) {
+    $('#compareTo, #price').on('change', function(e) {
         var price = $('#price').val();
-        var compareTo = $(this).val();
+        var compareTo = $('#compareTo').val();
         var save = compareTo - price;
         var percent = Math.round(save/compareTo * 100, 0);
         $('#save').text('$'+save);
@@ -396,7 +426,7 @@ $(function() {
 
     $('.number').on('input blur keyup paste', function() {
         $(this).val(function(i, v) {
-            return v.replace(/[^0-9\.\/]/ig, '')
+            return v.replace(/[^0-9\.\/ ]/ig, '')
                 // prevent inserting dots after the first one
                 .replace(/([^.]*\.[^.]*)\./g, '$1');
         });
@@ -408,6 +438,20 @@ $(function() {
             $('#conditionDate'+type).show();
         } else {
             $('#conditionDate'+type).hide();
+        }
+    }).trigger('change');
+
+    $('input[name="washer[]"]').on('change', function(e) {
+        if($('#category').val() == 'Washer Dryer Set') {
+            if ($('#stacked').is(':checked')) {
+                $('#condition2').parents('.row:eq(0)').hide();
+                $('#conditionWarranties2').parents('.row:eq(0)').hide();
+                $('.measurement .washer_dryer_set:eq(1)').hide();
+            } else {
+                $('#condition2').parents('.row:eq(0)').show();
+                $('#conditionWarranties2').parents('.row:eq(0)').show();
+                $('.measurement .washer_dryer_set:eq(1)').show();
+            }
         }
     }).trigger('change');
 });

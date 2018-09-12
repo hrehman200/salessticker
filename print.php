@@ -35,11 +35,20 @@ function getFormattedDate($condition_date) {
     return $condition_date;
 }
 
+/**
+ * @param $condition_warranty
+ * @param $condition_date
+ * @return mixed
+ */
 function getConditionWarranty($condition_warranty, $condition_date) {
     if (stripos($condition_warranty, 'warranty until') !== false) {
         $condition_warranty = str_replace('__/__/____', getFormattedDate($condition_date), $condition_warranty);
     }
     return $condition_warranty;
+}
+
+function isStackedCheckedInWasherDryerSet() {
+    return in_array('Stacked', $_POST['washer']);
 }
 
 /**
@@ -48,7 +57,7 @@ function getConditionWarranty($condition_warranty, $condition_date) {
 function setVariables($category) {
     global $h2, $warranty;
 
-    if($category == 'Washer Dryer Set') {
+    if($category == 'Washer Dryer Set' && !isStackedCheckedInWasherDryerSet()) {
         if ($_POST['condition1'] == $_POST['condition2']) {
             $h2 = $_POST['condition1'];
         } else {
@@ -58,12 +67,12 @@ function setVariables($category) {
         if ($_POST['condition1'] == $_POST['condition2']) {
             $warranty = sprintf('Washer and Dryer - (%s', getConditionWarranty($_POST['conditionWarranties1'], $_POST['conditionDate1']));
             if($_POST['condition1'] == 'Refurbished') {
-                $warranty .= sprintf('<br>+ 1 Year Extended Warranty Available for $%d', getExtendedWarrantyPrice($_POST['price']));
+                $warranty .= sprintf('<br><b>+ 1 Year Extended Warranty Available for $%d</b>', getExtendedWarrantyPrice($_POST['price']));
             }
             $warranty .= ')';
         } else {
             if($_POST['condition1'] == 'Refurbished' || $_POST['condition2'] == 'Refurbished') {
-                $ext_text1 = sprintf('<br>+ 1 Year Extended Warranty Available for $%d', getExtendedWarrantyPrice($_POST['price']/2));
+                $ext_text1 = sprintf('<br><b>+ 1 Year Extended Warranty Available for $%d</b>', getExtendedWarrantyPrice($_POST['price']/2));
             }
             $warranty = sprintf('Washer - (%s)<br>
                 Dryer - (%s) %s', getConditionWarranty($_POST['conditionWarranties1'], $_POST['conditionDate1']), getConditionWarranty($_POST['conditionWarranties2'], $_POST['conditionDate2']), $ext_text1);
@@ -75,7 +84,7 @@ function setVariables($category) {
         $warranty = sprintf('%s - (%s', $category, getConditionWarranty($_POST['conditionWarranties'.$condition_index], $_POST['conditionDate'.$condition_index]));
 
         if ($_POST['condition' . $condition_index] == 'Refurbished') {
-            $warranty .= sprintf('<br>+ 1 Year Extended Warranty Available for $%d', getExtendedWarrantyPrice($_POST['price']));
+            $warranty .= sprintf('<br><b>+ 1 Year Extended Warranty Available for $%d</b>', getExtendedWarrantyPrice($_POST['price']));
         }
         $warranty .= ')';
     }
@@ -95,54 +104,45 @@ function getVariable($name) {
 switch ($_POST['category']) {
     case 'Washer Dryer Set':
         $h1 = sprintf('%s Washer and %s%s Dryer Set', getVariable('washer'), $_POST['dryer'], ' ' . $_POST['dryerSteam']);
-        setVariables($_POST['category']);
         break;
 
     case 'Refrigerator':
         $h1 =  sprintf('%s %s', $_POST['color'], $_POST['category']);
-        setVariables($_POST['category']);
         break;
 
     case 'Stove':
         $h1 =  sprintf('%s %s', $_POST['stove'], $_POST['category']);
-        setVariables($_POST['category']);
         break;
 
     case 'Washing Machine':
         $h1 =  sprintf('%s %s', $_POST['washingMachine'], $_POST['category']);
-        setVariables($_POST['category']);
         break;
 
     case 'Washer':
         $h1 =  sprintf('%s %s', getVariable('washer'), $_POST['category']);
-        setVariables($_POST['category']);
         break;
 
     case 'Microwave':
         $h1 =  sprintf('%s %s', $_POST['microwave'], $_POST['category']);
-        setVariables($_POST['category']);
         break;
 
     case 'Freezer':
         $h1 =  sprintf('%s %s', $_POST['freezer'], $_POST['category']);
-        setVariables($_POST['category']);
         break;
 
     case 'Cooktop':
         $h1 =  sprintf('%s %s', $_POST['cooktop'], $_POST['category']);
-        setVariables($_POST['category']);
         break;
 
     case 'Wall Oven':
         $h1 =  sprintf('%s %s', $_POST['wall_oven'], $_POST['category']);
-        setVariables($_POST['category']);
         break;
 
     case 'Misc.':
         $h1 =  sprintf('%s', $_POST['misc']);
-        setVariables($_POST['category']);
         break;
 }
+setVariables($_POST['category']);
 ?>
 
 <!doctype html>
@@ -223,7 +223,7 @@ switch ($_POST['category']) {
     <tr>
         <td></td>
         <?php
-        if(strlen($_POST['width2']) > 0) {
+        if(strlen($_POST['width2']) > 0 && !isStackedCheckedInWasherDryerSet()) {
         ?>
             <td>
                 <div align="right">
