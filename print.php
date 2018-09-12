@@ -93,7 +93,7 @@ function getVariable($name) {
 }
 
 switch ($_POST['category']) {
-    case 'Washer Dryer Set ':
+    case 'Washer Dryer Set':
         $h1 = sprintf('%s Washer and %s%s Dryer Set', getVariable('washer'), $_POST['dryer'], ' ' . $_POST['dryerSteam']);
         setVariables($_POST['category']);
         break;
@@ -227,6 +227,7 @@ switch ($_POST['category']) {
         ?>
             <td>
                 <div align="right">
+                    <b><u>Washer</u></b><br>
                     <b>H: </b><?= $_POST['height1'] ?>"<br>
                     <b>W: </b><?= $_POST['width1'] ?>"<br>
                     <b>D: </b><?= $_POST['depth1'] ?>"
@@ -234,6 +235,7 @@ switch ($_POST['category']) {
             </td>
             <td>
                 <div align="right">
+                    <b><u>Dryer</u></b><br>
                     <b>H: </b><?= $_POST['height2'] ?>"<br>
                     <b>W: </b><?= $_POST['width2'] ?>"<br>
                     <b>D: </b><?= $_POST['depth2'] ?>"

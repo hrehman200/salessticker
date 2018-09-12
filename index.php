@@ -17,7 +17,7 @@
                     <label for="category" class="col-sm-3 col-form-label">Category</label>
                     <div class="col-sm-9">
                         <select class="form-control" id="category" name="category">
-                            <option>Washer Dryer Set </option>
+                            <option>Washer Dryer Set</option>
                             <option>Refrigerator</option>
                             <option>Stove</option>
                             <option>Washing Machine</option>
@@ -285,7 +285,7 @@
                 <div class="form-group row">
                     <label for="compareTo" class="col-sm-3 col-form-label">Compare to</label>
                     <div class="col-sm-3">
-                        <input type="text number" class="form-control" id="compareTo" name="compareTo">
+                        <input type="text" class="form-control number" id="compareTo" name="compareTo">
                     </div>
                 </div>
                 <div class="form-group row">
@@ -396,7 +396,9 @@ $(function() {
 
     $('.number').on('input blur keyup paste', function() {
         $(this).val(function(i, v) {
-            return v.replace(/[^0-9\.\/]/ig, '');
+            return v.replace(/[^0-9\.\/]/ig, '')
+                // prevent inserting dots after the first one
+                .replace(/([^.]*\.[^.]*)\./g, '$1');
         });
     });
 
