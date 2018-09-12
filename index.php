@@ -226,9 +226,10 @@
                 <div class="form-group row washer_dryer_set washer condition1">
                     <label for="category" class="col-sm-3 col-form-label">Condition Warranties</label>
                     <div class="col-sm-9">
-                        <select class="form-control conditionWarranties1" id="conditionWarranties1" name="conditionWarranties1">
+                        <select class="form-control conditionWarranties1" id="conditionWarranties1" name="conditionWarranties1" data-type="1">
 
                         </select>
+                        <input type="date" name="conditionDate1" id="conditionDate1" />
                     </div>
                 </div>
                 <div class="form-group row washer_dryer_set dryer">
@@ -269,9 +270,10 @@
                 <div class="form-group row washer_dryer_set dryer">
                     <label for="category" class="col-sm-3 col-form-label">Condition Warranties</label>
                     <div class="col-sm-9">
-                        <select class="form-control conditionWarranties2" id="conditionWarranties2" name="conditionWarranties2">
+                        <select class="form-control conditionWarranties2" id="conditionWarranties2" name="conditionWarranties2" data-type="2">
 
                         </select>
+                        <input type="date" name="conditionDate2" id="conditionDate2" />
                     </div>
                 </div>
                 <div class="form-group row">
@@ -397,6 +399,15 @@ $(function() {
             return v.replace(/[^0-9\.\/]/ig, '');
         });
     });
+
+    $('#conditionWarranties1, #conditionWarranties2').on('change', function(e) {
+        var type = $(this).data('type');
+        if($(this).val().toLowerCase().indexOf('warranty until') != -1) {
+            $('#conditionDate'+type).show();
+        } else {
+            $('#conditionDate'+type).hide();
+        }
+    }).trigger('change');
 });
 </script>
 
