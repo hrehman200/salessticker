@@ -191,7 +191,7 @@ setVariables($_POST['category']);
             font-size: 1em;
             line-height: 1em;
             text-align: right;
-            width: 5.4in;
+            width: 5in;
         }
 
     </style>
@@ -200,6 +200,12 @@ setVariables($_POST['category']);
 
 <div class="container">
 <table class="table">
+
+    <tr class="d-print-none">
+        <td colspan="3">
+            <a href="./index.php" class="btn btn-success btn-lg">Back</a>
+        </td>
+    </tr>
     <tr>
         <td colspan="3">
             <h1 class="text-center"><?= $h1 ?></h1>
@@ -299,7 +305,7 @@ setVariables($_POST['category']);
         ?>
 
         window.print();
-        window.location.href = './index.php';
+        //window.location.href = './index.php';
     });
 </script>
 </body>
