@@ -207,7 +207,7 @@ setVariables($_POST['category']);
         </td>
     </tr>
     <tr>
-        <td colspan="3">
+        <td colspan="3" class="headings">
             <h1 class="text-center"><?= $h1 ?></h1>
             <h2 class="<?=(strpos($h2, '<span') !== false) ? '' : 'text-center'?>"><?= $h2 ?></h2>
             <hr/>
@@ -299,7 +299,7 @@ setVariables($_POST['category']);
         <?php
         if($_POST['category'] != 'Washer Dryer Set') {
         ?>
-            $('.table td').css('font-size', '5.5vw');
+            $('td:not(.headings)').css('font-size', '5.6vw');
         <?php
         }
         ?>
