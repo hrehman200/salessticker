@@ -11,6 +11,7 @@ $extended_warranty = 0;
  * @return int
  */
 function getExtendedWarrantyPrice($price) {
+    $price = floor($price);
     $extended_warranty = 0;
     if ($price >= 99 && $price <= 399) {
         $extended_warranty = 49;
@@ -30,7 +31,7 @@ function getExtendedWarrantyPrice($price) {
  */
 function getFormattedDate($condition_date) {
     if (strlen($condition_date) > 0) {
-        $condition_date = date('d/m/Y', strtotime($condition_date));
+        $condition_date = date('m/d/Y', strtotime($condition_date));
     }
     return $condition_date;
 }
@@ -64,7 +65,7 @@ function setVariables($category) {
             $h2 = sprintf('<span style="text-align: left;">%s Washer<br/>%s Dryer</span>', $_POST['condition1'], $_POST['condition2']);
         }
 
-        if ($_POST['condition1'] == $_POST['condition2']) {
+        if ($_POST['condition1'] == $_POST['condition2'] && $_POST['condition1'] != 'Manufacturer Refurbished') {
             $warranty = sprintf('%s', getConditionWarranty($_POST['conditionWarranties1'], $_POST['conditionDate1']));
             if($_POST['condition1'] == 'Neu Refurbished') {
                 $warranty .= sprintf('<br><b>+ 1 Year Extended Warranty Available for $%d</b>', getExtendedWarrantyPrice($_POST['price']));
@@ -122,6 +123,10 @@ switch ($_POST['category']) {
 
     case 'Washer':
         $h1 =  sprintf('%s %s', getVariable('washer'), $_POST['category']);
+        break;
+
+    case 'Dryer':
+        $h1 =  sprintf('%s %s', getVariable('dryer'), $_POST['category']);
         break;
 
     case 'Microwave':
@@ -202,8 +207,22 @@ setVariables($_POST['category']);
 <table class="table">
 
     <tr class="d-print-none">
+        <form method="post" action="./index.php">
+            <?php
+            foreach($_POST as $key=>$value) {
+                if(is_array($value)) {
+                    foreach($value as $k=>$v) {
+                        echo sprintf('<input type="hidden" name="%s[]" value="%s" />', $key, $v);
+                    }
+                } else {
+                    echo sprintf('<input type="hidden" name="%s" value="%s" />', $key, $value);
+                }
+            }
+            ?>
+        </form>
         <td colspan="3">
             <a href="./index.php" class="btn btn-success btn-lg">Back</a>
+            <a href="javascript:;" class="btn btn-warning btn-lg btnEdit">Edit</a>
         </td>
     </tr>
     <tr>
@@ -295,6 +314,10 @@ setVariables($_POST['category']);
 <script src="js/bootstrap.min.js"></script>
 <script type="text/javascript">
     $(function () {
+
+        $('.btnEdit').on('click', function(e) {
+            $('form').submit();
+        });
 
         <?php
         if($_POST['category'] != 'Washer Dryer Set') {
