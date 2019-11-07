@@ -233,7 +233,7 @@ error_reporting(E_ERROR);
                         <select class="form-control condition" id="condition1" name="condition1" data-type="1">
                             <option>Neu Refurbished</option>
                             <option>Manufacturer Refurbished</option>
-                            <option>New Scratch / Dent</option>
+                            <option>Scratch / Dent</option>
                         </select>
                     </div>
                 </div>
@@ -281,7 +281,7 @@ error_reporting(E_ERROR);
                         <select class="form-control condition" id="condition2" name="condition2" data-type="2">
                             <option>Neu Refurbished</option>
                             <option>Manufacturer Refurbished</option>
-                            <option>New Scratch / Dent</option>
+                            <option>Scratch / Dent</option>
                         </select>
                     </div>
                 </div>
@@ -399,7 +399,7 @@ $(function() {
     var conditionWarranties = {
         'Neu Refurbished' : ['Neu 30-Day Parts and Labor Warranty Included'],
         'Manufacturer Refurbished':['1 Year Manufacturer Warranty', 'Manufacturer Warranty until __/__/____'],
-        'New Scratch / Dent':['1 Year Manufacturer Warranty ']
+        'Scratch / Dent':['1 Year Manufacturer Warranty ']
     };
 
     $('.condition').on('change', function (e) {
@@ -413,7 +413,7 @@ $(function() {
             $(cwEl).append('<option>'+conditionWarranties[selected][i]+'</option>');
         }
 
-        if(selected == 'Neu Refurbished' || selected == 'New Scratch / Dent') {
+        if(selected == 'Neu Refurbished' || selected == 'Scratch / Dent') {
             $('#conditionWarranties'+type).hide();
             $('#conditionWarrantiesTxt'+type).show().val(conditionWarranties[selected][0]);
             $('#conditionDate1, #conditionDate2').hide();

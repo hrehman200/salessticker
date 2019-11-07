@@ -221,7 +221,7 @@ setVariables($_POST['category']);
             ?>
         </form>
         <td colspan="3">
-            <a href="./index.php" class="btn btn-success btn-lg">Back</a>
+            <a href="./index.php" class="btn btn-success btn-lg">New</a>
             <a href="javascript:;" class="btn btn-warning btn-lg btnEdit">Edit</a>
         </td>
     </tr>
