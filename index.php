@@ -214,8 +214,9 @@ error_reporting(E_ERROR);
                             <label for="category" class="col-sm-3 col-form-label">Condition</label>
                             <div class="col-sm-9">
                                 <select class="form-control condition" id="condition1" name="condition1" data-type="1">
-                                    <option>Refurbished</option>
-                                    <option>Scratch / Dent</option>
+                                    <option>R</option>
+                                    <option>SD</option>
+                                    <option>SDN</option>
                                 </select>
                             </div>
                         </div>
@@ -259,8 +260,9 @@ error_reporting(E_ERROR);
                             <label for="category" class="col-sm-3 col-form-label">Condition</label>
                             <div class="col-sm-9">
                                 <select class="form-control condition" id="condition2" name="condition2" data-type="2">
-                                    <option>Refurbished</option>
-                                    <option>Scratch / Dent</option>
+                                    <option>R</option>
+                                    <option>SD</option>
+                                    <option>SDN</option>
                                 </select>
                             </div>
                         </div>
@@ -354,6 +356,8 @@ error_reporting(E_ERROR);
 
         $('#category').on('change', function(e) {
             var thisName = $(this).val().toLowerCase().replace(/ /g, '_').replace('.', '');
+            if (thisName == 'range')
+                thisName = 'stove';
             $('.washer_dryer_set, .washer, .refrigerator, .freezer, .stove, .washing_machine, .dryer, .dishwaher, .microwave, .cooktop, .wall_oven, .misc').hide();
             $('.' + thisName).show();
             if (thisName.indexOf('washer') == -1 || thisName.indexOf('dryer') == -1) {
@@ -377,8 +381,9 @@ error_reporting(E_ERROR);
         }).trigger('change');
 
         var conditionWarranties = {
-            'Refurbished': ['30-Day Parts and Labor Warranty Included'],
-            'Scratch / Dent': ['1 Year Manufacturer Warranty', '1 Year In-House Warranty Included']
+            'R': ['30-Day Parts and Labor Warranty Included'],
+            'SD': ['1 Year Manufacturer Warranty', '2 Year Manufacturer Warranty'],
+            'SDN': ['1 Year In-House Warranty']
         };
 
         $('.condition').on('change', function(e) {
@@ -392,7 +397,7 @@ error_reporting(E_ERROR);
                 $(cwEl).append('<option>' + conditionWarranties[selected][i] + '</option>');
             }
 
-            if (selected == 'Refurbished') {
+            if (selected == 'R' || selected == 'SDN') {
                 $('#conditionWarranties' + type).hide();
                 $('#conditionWarrantiesTxt' + type).show().val(conditionWarranties[selected][0]);
                 $('#conditionDate1, #conditionDate2').hide();

@@ -10,7 +10,8 @@ $extended_warranty = 0;
  * @param $price
  * @return int
  */
-function getExtendedWarrantyPrice($price) {
+function getExtendedWarrantyPrice($price)
+{
     $price = floor($price);
     $extended_warranty = 0;
     if ($price >= 99 && $price <= 399) {
@@ -29,7 +30,8 @@ function getExtendedWarrantyPrice($price) {
  * @param $condition_date
  * @return false|string
  */
-function getFormattedDate($condition_date) {
+function getFormattedDate($condition_date)
+{
     if (strlen($condition_date) > 0) {
         $condition_date = date('m/d/Y', strtotime($condition_date));
     }
@@ -41,52 +43,68 @@ function getFormattedDate($condition_date) {
  * @param $condition_date
  * @return mixed
  */
-function getConditionWarranty($condition_warranty, $condition_date) {
+function getConditionWarranty($condition_warranty, $condition_date)
+{
     if (stripos($condition_warranty, 'warranty until') !== false) {
         $condition_warranty = str_replace('__/__/____', getFormattedDate($condition_date), $condition_warranty);
     }
     return $condition_warranty;
 }
 
-function isStackedCheckedInWasherDryerSet() {
+function isStackedCheckedInWasherDryerSet()
+{
     return in_array('Stacked', $_POST['washer']);
+}
+
+function getTextReplacement($text)
+{
+    $arr = [
+        'R' => 'Refurbished',
+        'SD' => 'Scratch and Dent',
+        'SDN' => 'Scratch and Dent'
+    ];
+
+    return $arr[$text];
 }
 
 /**
  * @param $category
  */
-function setVariables($category) {
+function setVariables($category)
+{
     global $h2, $warranty;
 
-    if($category == 'Washer Dryer Set' && !isStackedCheckedInWasherDryerSet()) {
-        if ($_POST['condition1'] == $_POST['condition2']) {
-            $h2 = $_POST['condition1'];
+    if ($category == 'Washer Dryer Set' && !isStackedCheckedInWasherDryerSet()) {
+        if (
+            $_POST['condition1'] == $_POST['condition2'] ||
+            (strpos($_POST['condition1'], 'SD') !== false && strpos($_POST['condition2'], 'SD') !== false)
+        ) {
+            $h2 = getTextReplacement($_POST['condition1']);
         } else {
-            $h2 = sprintf('<span style="text-align: left;">%s Washer<br/>%s Dryer</span>', $_POST['condition1'], $_POST['condition2']);
+            $h2 = sprintf('<span style="text-align: left;">%s Washer<br/>%s Dryer</span>', getTextReplacement($_POST['condition1']), getTextReplacement($_POST['condition2']));
         }
 
         if ($_POST['condition1'] == $_POST['condition2'] && $_POST['condition1'] != 'Manufacturer Refurbished') {
             $warranty = sprintf('%s', getConditionWarranty($_POST['conditionWarranties1'], $_POST['conditionDate1']));
-            if($_POST['condition1'] == 'Refurbished') {
+            if ($_POST['condition1'] == 'R') {
                 $warranty .= sprintf('<br><b>+ 1 Year Extended Warranty Available for $%d</b>', getExtendedWarrantyPrice($_POST['price']));
             }
         } else {
-            if($_POST['condition1'] == 'Refurbished') {
-                $ext_text1 = sprintf('<br><b>+ 1 Year Extended Warranty Available for $%d</b>', getExtendedWarrantyPrice($_POST['price']/2));
+            if ($_POST['condition1'] == 'R') {
+                $ext_text1 = sprintf('<br><b>+ 1 Year Extended Warranty Available for $%d</b>', getExtendedWarrantyPrice($_POST['price'] / 2));
             }
-            if($_POST['condition2'] == 'Refurbished') {
-                $ext_text2 = sprintf('<br><b>+ 1 Year Extended Warranty Available for $%d</b>', getExtendedWarrantyPrice($_POST['price']/2));
+            if ($_POST['condition2'] == 'R') {
+                $ext_text2 = sprintf('<br><b>+ 1 Year Extended Warranty Available for $%d</b>', getExtendedWarrantyPrice($_POST['price'] / 2));
             }
             $warranty = sprintf('Washer - %s %s<br>
                 Dryer - %s %s', getConditionWarranty($_POST['conditionWarranties1'], $_POST['conditionDate1']), $ext_text1, getConditionWarranty($_POST['conditionWarranties2'], $_POST['conditionDate2']), $ext_text2);
         }
-
     } else {
         $condition_index = ($category == 'Dryer') ? 2 : 1;
-        $h2 = $_POST['condition' . $condition_index];
-        $warranty = sprintf('%s', getConditionWarranty($_POST['conditionWarranties'.$condition_index], $_POST['conditionDate'.$condition_index]));
+        $h2 = getTextReplacement($_POST['condition' . $condition_index]);
+        $warranty = sprintf('%s', getConditionWarranty($_POST['conditionWarranties' . $condition_index], $_POST['conditionDate' . $condition_index]));
 
-        if ($_POST['condition' . $condition_index] == 'Refurbished') {
+        if ($_POST['condition' . $condition_index] == 'R') {
             $warranty .= sprintf('<br><b>+ 1 Year Extended Warranty Available for $%d</b>', getExtendedWarrantyPrice($_POST['price']));
         }
     }
@@ -96,8 +114,9 @@ function setVariables($category) {
  * @param $name
  * @return string
  */
-function getVariable($name) {
-    if(is_array($_POST[$name])) {
+function getVariable($name)
+{
+    if (is_array($_POST[$name])) {
         return implode(' ', $_POST[$name]);
     }
     return $_POST[$name];
@@ -105,8 +124,13 @@ function getVariable($name) {
 
 switch ($_POST['category']) {
     case 'Washer Dryer Set':
-        $h1 = sprintf('%s Washer and %s%s Dryer %s', getVariable('washer'), $_POST['dryer'], ' ' . $_POST['dryerSteam'],
-            !isStackedCheckedInWasherDryerSet() ? 'Set' : '');
+        $h1 = sprintf(
+            '%s Washer and %s%s Dryer %s',
+            getVariable('washer'),
+            $_POST['dryer'],
+            ' ' . $_POST['dryerSteam'],
+            !isStackedCheckedInWasherDryerSet() ? 'Set' : ''
+        );
         break;
 
     case 'Refrigerator':
@@ -154,6 +178,7 @@ setVariables($_POST['category']);
 
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -165,7 +190,8 @@ setVariables($_POST['category']);
             margin: 4mm;
         }
 
-        html, body{
+        html,
+        body {
             padding: 0;
             margin: 2mm;
             width: 109mm;
@@ -198,141 +224,149 @@ setVariables($_POST['category']);
             text-align: right;
             width: 5in;
         }
-
     </style>
 </head>
+
 <body>
 
-<div class="container">
-<table class="table">
+    <div class="container">
+        <table class="table">
 
-    <tr class="d-print-none">
-        <form method="post" action="./index.php">
-            <?php
-            foreach($_POST as $key=>$value) {
-                if(is_array($value)) {
-                    foreach($value as $k=>$v) {
-                        echo sprintf('<input type="hidden" name="%s[]" value="%s" />', $key, $v);
+            <tr class="d-print-none">
+                <form method="post" action="./index.php">
+                    <?php
+                    foreach ($_POST as $key => $value) {
+                        if (is_array($value)) {
+                            foreach ($value as $k => $v) {
+                                echo sprintf('<input type="hidden" name="%s[]" value="%s" />', $key, $v);
+                            }
+                        } else {
+                            echo sprintf('<input type="hidden" name="%s" value="%s" />', $key, $value);
+                        }
                     }
+                    ?>
+                </form>
+                <td colspan="3">
+                    <a href="./index.php" class="btn btn-success btn-lg">New</a>
+                    <a href="javascript:;" class="btn btn-warning btn-lg btnEdit">Edit</a>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3" class="headings">
+                    <h1 class="text-center"><?= $h1 ?></h1>
+                    <h2 class="<?= (strpos($h2, '<span') !== false) ? '' : 'text-center' ?>"><?= $h2 ?></h2>
+                    <hr />
+                    <h1 class="text-center price">$<?= $_POST['price'] ?></h1>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3">&nbsp;</td>
+            </tr>
+            <tr>
+                <td><b>Compare</b></td>
+                <td colspan="2">$<?= $_POST['compareTo'] ?></td>
+            </tr>
+            <tr>
+                <td><b>Save</b></td>
+                <td colspan="2">$<?= $_POST['save'] ?> (<?= $_POST['savePercent'] ?>% off)</td>
+            </tr>
+            <tr>
+                <td colspan="3">&nbsp;</td>
+            </tr>
+            <tr>
+                <td><b>Warranty</b></td>
+                <td colspan="2"><?= $warranty ?></td>
+            </tr>
+            <tr>
+                <td colspan="3">&nbsp;</td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <u><b>Features:</b></u><br />
+                    <?= $_POST['feature1'] ?><br />
+                    <?= $_POST['feature2'] ?><br />
+                    <?= $_POST['feature3'] ?>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3">&nbsp;</td>
+            </tr>
+            <tr>
+                <?php
+                if (strlen($_POST['width2']) > 0 && !isStackedCheckedInWasherDryerSet()) {
+                ?>
+                    <td>
+                        <div align="left">
+                            <b><u>Washer</u></b><br>
+                            <b>H: </b><?= $_POST['height1'] ?>"<br>
+                            <b>W: </b><?= $_POST['width1'] ?>"<br>
+                            <b>D: </b><?= $_POST['depth1'] ?>"
+                        </div>
+                    </td>
+                    <td>
+                        <div align="left">
+                            <b><u>Dryer</u></b><br>
+                            <b>H: </b><?= $_POST['height2'] ?>"<br>
+                            <b>W: </b><?= $_POST['width2'] ?>"<br>
+                            <b>D: </b><?= $_POST['depth2'] ?>"
+                        </div>
+                    </td>
+                <?php
                 } else {
-                    echo sprintf('<input type="hidden" name="%s" value="%s" />', $key, $value);
+                ?>
+                    <td>
+                        <div align="left">
+                            <b>H: </b><?= $_POST['height1'] ?>"<br>
+                            <b>W: </b><?= $_POST['width1'] ?>"<br>
+                            <b>D: </b><?= $_POST['depth1'] ?>"
+                        </div>
+                    </td>
+                    <td></td>
+                <?php
                 }
+                ?>
+                <td></td>
+            </tr>
+        </table>
+
+        <div id="footer">
+            <?php
+            if ($_POST['category'] == 'Washer Dryer Set') {
+                echo 'W-' . $_POST['condition1'] . ' ' . 'D-' . $_POST['condition2'];
+            } else if ($_POST['category'] == 'Dryer') {
+                echo $_POST['condition2'];
+            } else {
+                echo $_POST['condition1'];
             }
             ?>
-        </form>
-        <td colspan="3">
-            <a href="./index.php" class="btn btn-success btn-lg">New</a>
-            <a href="javascript:;" class="btn btn-warning btn-lg btnEdit">Edit</a>
-        </td>
-    </tr>
-    <tr>
-        <td colspan="3" class="headings">
-            <h1 class="text-center"><?= $h1 ?></h1>
-            <h2 class="<?=(strpos($h2, '<span') !== false) ? '' : 'text-center'?>"><?= $h2 ?></h2>
-            <hr/>
-            <h1 class="text-center price">$<?= $_POST['price'] ?></h1>
-        </td>
-    </tr>
-    <tr>
-        <td colspan="3">&nbsp;</td>
-    </tr>
-    <tr>
-        <td><b>Compare</b></td>
-        <td colspan="2">$<?= $_POST['compareTo'] ?></td>
-    </tr>
-    <tr>
-        <td><b>Save</b></td>
-        <td colspan="2">$<?= $_POST['save'] ?> (<?= $_POST['savePercent'] ?>% off)</td>
-    </tr>
-    <tr>
-        <td colspan="3">&nbsp;</td>
-    </tr>
-    <tr>
-        <td><b>Warranty</b></td>
-        <td colspan="2"><?=$warranty?></td>
-    </tr>
-    <tr>
-        <td colspan="3">&nbsp;</td>
-    </tr>
-    <tr>
-        <td colspan="3">
-            <u><b>Features:</b></u><br/>
-            <?= $_POST['feature1'] ?><br/>
-            <?= $_POST['feature2'] ?><br/>
-            <?= $_POST['feature3'] ?>
-        </td>
-    </tr>
-    <tr>
-        <td colspan="3">&nbsp;</td>
-    </tr>
-    <tr>
-        <?php
-        if(strlen($_POST['width2']) > 0 && !isStackedCheckedInWasherDryerSet()) {
-            ?>
-            <td>
-                <div align="left">
-                    <b><u>Washer</u></b><br>
-                    <b>H: </b><?= $_POST['height1'] ?>"<br>
-                    <b>W: </b><?= $_POST['width1'] ?>"<br>
-                    <b>D: </b><?= $_POST['depth1'] ?>"
-                </div>
-            </td>
-            <td>
-                <div align="left">
-                    <b><u>Dryer</u></b><br>
-                    <b>H: </b><?= $_POST['height2'] ?>"<br>
-                    <b>W: </b><?= $_POST['width2'] ?>"<br>
-                    <b>D: </b><?= $_POST['depth2'] ?>"
-                </div>
-            </td>
-            <?php
-        } else {
-            ?>
-            <td>
-                <div align="left">
-                    <b>H: </b><?= $_POST['height1'] ?>"<br>
-                    <b>W: </b><?= $_POST['width1'] ?>"<br>
-                    <b>D: </b><?= $_POST['depth1'] ?>"
-                </div>
-            </td>
-            <td></td>
-            <?php
-        }
-        ?>
-        <td></td>
-    </tr>
-</table>
+            <br />
+            Ref # : <?= $_POST['trackingNo'] ?>
+        </div>
 
-    <div id="footer">
-        Ref # : <?=$_POST['trackingNo']?>
     </div>
 
-</div>
+    <script src="js/jquery-1.12.4.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+        $(function() {
 
-<script src="js/jquery-1.12.4.min.js"></script>
-<script src="js/popper.min.js"></script>
-<script src="js/bootstrap.min.js"></script>
-<script type="text/javascript">
-    $(function () {
+            $('.btnEdit').on('click', function(e) {
+                $('form').submit();
+            });
 
-        $('.btnEdit').on('click', function(e) {
-            $('form').submit();
+            <?php
+            if ($_POST['category'] != 'Washer Dryer Set') {
+            ?>
+                $('td:not(.headings)').css('font-size', '5.6vw');
+            <?php
+            }
+            ?>
+
+            window.print();
+            //window.location.href = './index.php';
         });
-
-        <?php
-        if($_POST['category'] != 'Washer Dryer Set') {
-        ?>
-            $('td:not(.headings)').css('font-size', '5.6vw');
-        <?php
-        }
-        ?>
-
-        window.print();
-        //window.location.href = './index.php';
-    });
-</script>
+    </script>
 </body>
+
 </html>
-
-
-
